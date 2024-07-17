@@ -18,7 +18,8 @@ const authRoutes = require('./routes/authRoutes');
 mongoose.connect(process.env.DATABASE, {})
   .then(() => console.log('Connected to database'))
   .catch((error) => console.log(error));
-
+  
+  mongoose.set('bufferCommands', false);
 // MIDDLEWARE
 app.use(express.json()); // Parses incoming requests with JSON payloads
 app.use(morgan('dev'));

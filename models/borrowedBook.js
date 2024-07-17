@@ -25,6 +25,14 @@ const borrowedUserSchema = new mongoose.Schema({
       default: 'pending'
     }
   }],
+  history: [{
+    _id: String,
+    bookTitle: String,
+    authorName: String,
+    borrowDate: Date,
+    returnDate: Date
+    // Add other properties as needed
+  }]
 });
 
 module.exports = mongoose.model('BorrowersUser', borrowedUserSchema);

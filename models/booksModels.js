@@ -55,7 +55,7 @@ const booksSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['available', 'pending', 'borrowed'],
+        enum: ['available', 'pending', 'processing'],
         default: "available"
     }
 
