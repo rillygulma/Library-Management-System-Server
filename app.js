@@ -1,5 +1,5 @@
 const express = require('express');
-const app = express();
+const path = require('path');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
@@ -11,6 +11,9 @@ const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const request = require('request');
 
+// Initialize Express app
+const app = express();
+
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 
@@ -18,8 +21,9 @@ const authRoutes = require('./routes/authRoutes');
 mongoose.connect(process.env.DATABASE, {})
   .then(() => console.log('Connected to database'))
   .catch((error) => console.log(error));
-  
-  mongoose.set('bufferCommands', false);
+
+mongoose.set('bufferCommands', false);
+
 // MIDDLEWARE
 app.use(express.json()); // Parses incoming requests with JSON payloads
 app.use(morgan('dev'));
@@ -61,45 +65,50 @@ app.post('/send-sms', (req, res) => {
 
   // Create the data object for the SMS
   const data = {
-      to: to || "+2348035504017",
-      from: from || "talert",
-      sms: sms || "Hi there, testing Termii",
-      type: type || "plain",
-      api_key: api_key || "Your API key",  // Ensure this is correctly set
-      channel: channel || "generic",
-      media: media || {
-          url: "https://media.example.com/file",
-          caption: "your media file"
-      }
+    to: to || "+2348035504017",
+    from: from || "talert",
+    sms: sms || "Hi there, testing Termii",
+    type: type || "plain",
+    api_key: api_key || "Your API key",  // Ensure this is correctly set
+    channel: channel || "generic",
+    media: media || {
+      url: "https://media.example.com/file",
+      caption: "your media file"
+    }
   };
 
   // Options for the request
   const options = {
-      method: 'POST',
-      url: 'https://api.ng.termii.com/api/sms/send', // Replace with actual API URL
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+    method: 'POST',
+    url: 'https://api.ng.termii.com/api/sms/send', // Replace with actual API URL
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
   };
 
   // Make the request to send the SMS
   request(options, (error, response) => {
-      if (error) {
-          console.error(error);
-          return res.status(500).send('An error occurred while sending the SMS');
-      }
+    if (error) {
+      console.error(error);
+      return res.status(500).send('An error occurred while sending the SMS');
+    }
 
-      if (response.statusCode === 401) {
-          return res.status(401).send('Unauthorized: Invalid API key or authentication credentials');
-      }
+    if (response.statusCode === 401) {
+      return res.status(401).send('Unauthorized: Invalid API key or authentication credentials');
+    }
 
-      console.log(response.body);
-      res.status(200).send(response.body);
+    console.log(response.body);
+    res.status(200).send(response.body);
   });
 });
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'build')));
 
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 app.use('/api', authRoutes);
 
