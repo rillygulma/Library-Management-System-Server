@@ -7,6 +7,8 @@ require('dotenv').config();
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const errorHandler = require('./middleware/error');
+const jwt = require('jsonwebtoken');
+const axios = require('axios');
 const request = require('request');
 
 // Initialize Express app
@@ -101,15 +103,6 @@ app.post('/send-sms', (req, res) => {
   });
 });
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'build')));
-
-// This catch-all route sends back the React index.html file for any request that doesn't match the ones above
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
-
-// Use the auth routes
 app.use('/api', authRoutes);
 
 // Error middleware
