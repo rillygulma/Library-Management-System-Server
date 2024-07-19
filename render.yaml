@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: my-service
+    env: static
+    staticPublishPath: build
+    buildCommand: npm run build
